@@ -1,0 +1,10 @@
+[time]{time}]time]{event}: {"port":3000}
+[time]{time}]time]{event}: {}
+[time]{time}]time]{event}: {"port":3000}
+[time]{time}]time]{event}: {"url":"/","method":"GET"}
+[time]{time}]time]{event}: {"url":"/favicon.ico","method":"GET"}
+[time]{time}]time]{event}: {"url":"/","method":"GET"}
+[time]{time}]time]{event}: {"url":"/favicon.ico","method":"GET"}
+[time]{time}]time]{event}: {"url":"/","method":"GET"}
+[time]{time}]time]{event}: {"url":"/favicon.ico","method":"GET"}
+[time]{time}]time]{event}: {}
