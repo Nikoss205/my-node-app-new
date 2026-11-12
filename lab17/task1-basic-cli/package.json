@@ -1,0 +1,12 @@
+{
+  "name": "my-cli-task1",
+  "version": "1.0.0",
+  "description": "Лабораторная работа №17, Задание 1: простое CLI-приложение с позиционными аргументами",
+  "bin": {
+    "my-cli": "bin/my-cli.js"
+  },
+  "scripts": {
+    "start": "node bin/my-cli.js"
+  },
+  "license": "MIT"
+}

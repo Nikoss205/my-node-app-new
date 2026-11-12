@@ -1,0 +1,9 @@
+node_modules/
+dist/
+dist-bin/
+coverage/
+# файлы, которые создаются при демонстрации команд
+output.*
+report.pdf
+result.json
+*.log

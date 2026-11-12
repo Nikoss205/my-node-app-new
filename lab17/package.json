@@ -1,0 +1,10 @@
+{
+  "name": "lab17",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Лабораторная работа №17: исследование методов создания CLI-приложений",
+  "scripts": {
+    "install:all": "npm --prefix task2-commander install && npm --prefix task3-inquirer install && npm --prefix task4-formatting install && npm --prefix task5-full-cli install"
+  },
+  "license": "MIT"
+}

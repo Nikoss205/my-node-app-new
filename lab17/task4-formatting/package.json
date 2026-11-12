@@ -1,0 +1,18 @@
+{
+  "name": "my-cli-task4",
+  "version": "1.0.0",
+  "description": "Лабораторная работа №17, Задание 4: цвета, спиннеры, прогресс-бары, stdout/stderr",
+  "bin": {
+    "my-cli": "bin/my-cli.js"
+  },
+  "scripts": {
+    "start": "node bin/my-cli.js"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "cli-progress": "^3.12.0",
+    "commander": "^12.1.0",
+    "ora": "^5.4.1"
+  },
+  "license": "MIT"
+}
