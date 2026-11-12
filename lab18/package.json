@@ -1,0 +1,17 @@
+{
+  "name": "lab18",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Лабораторная работа №18: исследование методов работы модуля OS (группа ББМО-01-23)",
+  "scripts": {
+    "info": "node os-info.js",
+    "resources": "node os-resources.js",
+    "network": "node os-network.js",
+    "monitor": "node os-monitor.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18.3"
+  },
+  "license": "MIT"
+}
