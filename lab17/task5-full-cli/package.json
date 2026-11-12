@@ -1,0 +1,48 @@
+{
+  "name": "my-cli",
+  "version": "1.0.0",
+  "description": "Лабораторная работа №17, Задание 5: полноценное CLI-приложение (группа ББМО-01-23)",
+  "main": "cli.js",
+  "bin": {
+    "my-cli": "bin/my-cli.js"
+  },
+  "scripts": {
+    "start": "node bin/my-cli.js",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "build:bin": "pkg . --out-path dist-bin"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^12.1.0",
+    "ora": "^5.4.1"
+  },
+  "devDependencies": {
+    "@yao-pkg/pkg": "^6.0.0",
+    "jest": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ],
+    "testTimeout": 30000
+  },
+  "pkg": {
+    "scripts": [
+      "cli.js",
+      "commands/**/*.js",
+      "services/**/*.js",
+      "utils/**/*.js"
+    ],
+    "targets": [
+      "node22-win-x64",
+      "node22-linux-x64"
+    ],
+    "outputPath": "dist-bin"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT"
+}

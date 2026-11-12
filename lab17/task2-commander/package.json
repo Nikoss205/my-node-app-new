@@ -1,0 +1,15 @@
+{
+  "name": "my-cli-task2",
+  "version": "1.0.0",
+  "description": "Лабораторная работа №17, Задание 2: опции и флаги (commander)",
+  "bin": {
+    "my-cli": "bin/my-cli.js"
+  },
+  "scripts": {
+    "start": "node bin/my-cli.js"
+  },
+  "dependencies": {
+    "commander": "^12.1.0"
+  },
+  "license": "MIT"
+}
