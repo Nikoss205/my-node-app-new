@@ -1,0 +1,18 @@
+{
+  "name": "lab19",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Лабораторная работа №19: исследование методов работы модуля Events (группа ББМО-01-23)",
+  "scripts": {
+    "basic": "node events-basic.js",
+    "once": "node events-once.js",
+    "class": "node events-class.js",
+    "advanced": "node events-advanced.js",
+    "bus": "node event-bus.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18.3"
+  },
+  "license": "MIT"
+}
