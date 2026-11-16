@@ -1,0 +1,16 @@
+{
+  "name": "lab20-http-shikel-nikita",
+  "version": "1.0.0",
+  "description": "Lab 20 — Node.js HTTP: basic server, headers, request body, routing and advanced features",
+  "main": "http-basic.js",
+  "scripts": {
+    "task1": "node http-basic.js",
+    "task2": "node http-headers.js",
+    "task3": "node http-body.js",
+    "task4": "node http-routing.js",
+    "task5": "node http-advanced.js",
+    "check": "node --check http-basic.js && node --check http-headers.js && node --check http-body.js && node --check http-routing.js && node --check http-advanced.js"
+  },
+  "engines": { "node": ">=18" },
+  "license": "ISC"
+}
