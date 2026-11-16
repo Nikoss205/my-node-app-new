@@ -1,80 +1,162 @@
-const http = require('node:http');
 
-const PORT = Number(process.env.PORT || 3003);
-let nextId = 3;
-const students = [
-  { id: 1, name: 'Іван Петренко', group: 'ББМО-01-23' },
-  { id: 2, name: 'Олена Коваль', group: 'ББМО-01-23' }
+const http = require('http');
+
+const PORT = 3000;
+
+let students = [
+  { id: 1, name: 'Шикель Никита', group: 'ББМО-01-23' },
+  { id: 2, name: 'Алексей Смирнов', group: 'ББМО-02-23' }
 ];
+let nextId = 3;
 
-function sendJson(res, status, data, extraHeaders = {}) {
-  res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', ...extraHeaders });
+function sendJson(res, statusCode, data) {
+  res.writeHead(statusCode, { 'Content-Type': 'application/json; charset=utf-8' });
   res.end(JSON.stringify(data, null, 2));
 }
-function getBody(req) {
+
+function sendText(res, statusCode, text) {
+  res.writeHead(statusCode, { 'Content-Type': 'text/plain; charset=utf-8' });
+  res.end(text);
+}
+
+function readJsonBody(req) {
   return new Promise((resolve, reject) => {
     let body = '';
-    req.setEncoding('utf8');
-    req.on('data', chunk => body += chunk);
-    req.on('end', () => resolve(body));
+    req.on('data', (chunk) => {
+      body += chunk.toString('utf8');
+    });
+    req.on('end', () => {
+      if (!body) return resolve({});
+      try {
+        resolve(JSON.parse(body));
+      } catch (e) {
+        reject(new Error('Invalid JSON'));
+      }
+    });
     req.on('error', reject);
   });
 }
 
-const server = http.createServer(async (req, res) => {
-  const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
-  if (!url.pathname.startsWith('/api/students')) {
-    res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
-    return res.end('404 Not Found');
-  }
-
-  const match = url.pathname.match(/^\/api\/students(?:\/(\d+))?\/?$/);
-  if (!match) return sendJson(res, 404, { error: 'Route not found' });
-  const id = match[1] ? Number(match[1]) : null;
-
-  if (req.method === 'GET') {
-    if (id !== null) {
-      const student = students.find(item => item.id === id);
-      return student ? sendJson(res, 200, student) : sendJson(res, 404, { error: 'Student not found' });
+const routes = [
+  {
+    method: 'GET',
+    pattern: /^\/users\/([^\/]+)$/,
+    handler: (req, res, params) => {
+      sendJson(res, 200, { id: params[0] });
     }
-    const group = url.searchParams.get('group');
-    const result = group ? students.filter(item => item.group === group) : students;
-    return sendJson(res, 200, result);
+  },
+  {
+    method: 'GET',
+    pattern: /^\/users\/([^\/]+)\/posts\/([^\/]+)$/,
+    handler: (req, res, params) => {
+      sendJson(res, 200, { userId: params[0], postId: params[1] });
+    }
+  },
+  {
+    method: 'GET',
+    pattern: /^\/search$/,
+    handler: (req, res, params, query) => {
+      const q = query.q || '';
+      const limit = parseInt(query.limit, 10) || 10;
+      sendJson(res, 200, { q: q, limit: limit });
+    }
+  },
+  {
+    method: 'GET',
+    pattern: /^\/api\/students$/,
+    handler: (req, res, params, query) => {
+      let result = students;
+      if (query.group) {
+        result = students.filter((s) => s.group === query.group);
+      }
+      sendJson(res, 200, result);
+    }
+  },
+  {
+    method: 'GET',
+    pattern: /^\/api\/students\/(\d+)$/,
+    handler: (req, res, params) => {
+      const id = parseInt(params[0], 10);
+      const student = students.find((s) => s.id === id);
+      if (!student) return sendText(res, 404, 'Not Found');
+      sendJson(res, 200, student);
+    }
+  },
+  {
+    method: 'POST',
+    pattern: /^\/api\/students$/,
+    handler: async (req, res) => {
+      try {
+        const data = await readJsonBody(req);
+        const newStudent = {
+          id: nextId++,
+          name: data.name || 'Без имени',
+          group: data.group || 'ББМО-01-23'
+        };
+        students.push(newStudent);
+        sendJson(res, 201, newStudent);
+      } catch (e) {
+        sendText(res, 400, e.message);
+      }
+    }
+  },
+  {
+    method: 'PUT',
+    pattern: /^\/api\/students\/(\d+)$/,
+    handler: async (req, res, params) => {
+      try {
+        const id = parseInt(params[0], 10);
+        const student = students.find((s) => s.id === id);
+        if (!student) return sendText(res, 404, 'Not Found');
+        const data = await readJsonBody(req);
+        if (data.name) student.name = data.name;
+        if (data.group) student.group = data.group;
+        sendJson(res, 200, student);
+      } catch (e) {
+        sendText(res, 400, e.message);
+      }
+    }
+  },
+  {
+    method: 'DELETE',
+    pattern: /^\/api\/students\/(\d+)$/,
+    handler: (req, res, params) => {
+      const id = parseInt(params[0], 10);
+      const index = students.findIndex((s) => s.id === id);
+      if (index === -1) return sendText(res, 404, 'Not Found');
+      students.splice(index, 1);
+      sendJson(res, 200, { deleted: true, id: id });
+    }
+  }
+];
+
+const server = http.createServer(async (req, res) => {
+  const parsedUrl = new URL(req.url, 'http://localhost:' + PORT);
+  const pathname = decodeURIComponent(parsedUrl.pathname);
+  const query = Object.fromEntries(parsedUrl.searchParams.entries());
+
+  res.on('finish', () => {
+    const timestamp = new Date().toISOString();
+    console.log('[' + timestamp + '] [ББМО-01-23] ' + req.method + ' ' + pathname + ' ' + res.statusCode);
+  });
+
+  const matchingPathRoutes = routes.filter((r) => r.pattern.test(pathname));
+
+  if (matchingPathRoutes.length === 0) {
+    return sendText(res, 404, 'Not Found');
+  }
+const route = matchingPathRoutes.find((r) => r.method === req.method);
+
+  if (!route) {
+    return sendText(res, 405, '405 Method Not Allowed');
   }
 
-  if (req.method === 'POST' && id === null) {
-    let payload;
-    try { payload = JSON.parse(await getBody(req) || '{}'); }
-    catch { return sendJson(res, 400, { error: 'Invalid JSON' }); }
-    if (!payload.name || !payload.group) return sendJson(res, 400, { error: 'name and group are required' });
-    const student = { id: nextId++, name: String(payload.name), group: String(payload.group) };
-    students.push(student);
-    return sendJson(res, 201, student, { Location: `/api/students/${student.id}` });
-  }
+  const match = pathname.match(route.pattern);
+  const params = match ? match.slice(1) : [];
 
-  if (req.method === 'PUT' && id !== null) {
-    const index = students.findIndex(item => item.id === id);
-    if (index < 0) return sendJson(res, 404, { error: 'Student not found' });
-    let payload;
-    try { payload = JSON.parse(await getBody(req) || '{}'); }
-    catch { return sendJson(res, 400, { error: 'Invalid JSON' }); }
-    students[index] = {
-      id,
-      name: payload.name === undefined ? students[index].name : String(payload.name),
-      group: payload.group === undefined ? students[index].group : String(payload.group)
-    };
-    return sendJson(res, 200, students[index]);
-  }
-
-  if (req.method === 'DELETE' && id !== null) {
-    const index = students.findIndex(item => item.id === id);
-    if (index < 0) return sendJson(res, 404, { error: 'Student not found' });
-    const [removed] = students.splice(index, 1);
-    return sendJson(res, 200, { deleted: removed });
-  }
-
-  const allowed = id === null ? 'GET, POST' : 'GET, PUT, DELETE';
-  return sendJson(res, 405, { error: 'Method not allowed' }, { Allow: allowed });
+  await route.handler(req, res, params, query);
 });
 
-server.listen(PORT, () => console.log(`Task 4: http://localhost:${PORT}`));
+server.listen(PORT, () => {
+  console.log('Сервер запущен на порту ' + PORT);
+});
