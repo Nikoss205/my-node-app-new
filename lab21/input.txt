@@ -1,0 +1,19 @@
+Лабораторная работа №21. Потоки в Node.js.
+Студент: Шикель Никита Владимирович, группа ББМО-01-23.
+Поток (stream) — это работа с данными по частям.
+Readable-поток отдаёт данные, Writable-поток принимает их.
+Transform-поток преобразует данные на лету.
+Backpressure защищает приёмник от переполнения буфера.
+Метод pipe() не закрывает потоки при ошибке.
+Метод pipeline() закрывает все потоки и даёт единый колбэк.
+Данные передаются чанками, а не целиком в память.
+Streams are powerful.
+Always handle errors.
+Use pipeline() in production.
+Chunks flow step by step.
+Streams are powerful.
+Always handle errors.
+Use pipeline() in production.
+Chunks flow step by step.
+Streams are powerful.
+End: ...........................
